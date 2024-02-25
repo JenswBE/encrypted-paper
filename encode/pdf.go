@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/signintech/gopdf"
+
+	"github.com/JenswBE/encrypted-paper/assets"
 )
 
 const FontSize = 12
@@ -16,10 +18,9 @@ func GeneratePDF(outputPath string, title string, qrCodes [][]byte) (err error) 
 
 	// Set font
 	fontName := "dejavu"
-	fontPath := "assets/DejaVuSans.ttf"
-	err = pdf.AddTTFFont(fontName, fontPath)
+	err = pdf.AddTTFFontData(fontName, assets.DejaVuSansTTF)
 	if err != nil {
-		return fmt.Errorf("failed to add TTF font %s as %s: %w", fontPath, fontName, err)
+		return fmt.Errorf("failed to add TTF font %s: %w", fontName, err)
 	}
 	err = pdf.SetFont(fontName, "", FontSize)
 	if err != nil {
