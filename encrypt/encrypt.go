@@ -16,14 +16,17 @@ import (
 // Recommended salt size based on https://en.wikipedia.org/wiki/Argon2#Algorithm
 const SaltSizeBytes = 16
 
+// Minimum length for password
+const MinPasswordLength = 8
+
 func GetPassword(withConfirm bool) (string, error) {
 	for {
 		password, err := getPassword("Enter your password")
 		if err != nil {
 			return "", fmt.Errorf("failed to get password: %w", err)
 		}
-		if len(password) == 0 {
-			fmt.Printf("\nPassword cannot be empty. Please try again.\n\n")
+		if len(password) < MinPasswordLength {
+			fmt.Printf("\nPassword must at least have a length of %d. Please try again.\n\n", MinPasswordLength)
 			continue
 		}
 		if withConfirm {
@@ -61,6 +64,10 @@ func GenerateSalt() ([]byte, error) {
 }
 
 func AEADFromPassword(password string, salt []byte) (cipher.AEAD, error) {
+	if len(password) < MinPasswordLength {
+		return nil, fmt.Errorf("password shorter than minimum length of %d", MinPasswordLength)
+	}
+
 	key := argon2.IDKey([]byte(password), salt, 1, 64*1024, 4, 32)
 	aead, err := chacha20poly1305.NewX(key)
 	if err != nil {
