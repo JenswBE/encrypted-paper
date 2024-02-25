@@ -8,7 +8,7 @@ import (
 
 const FontSize = 12
 
-func GeneratePDF(outputPath string, title string, qrCodes [][]byte) error {
+func GeneratePDF(outputPath string, title string, qrCodes [][]byte) (err error) {
 	// Init PDF
 	pdf := gopdf.GoPdf{}
 	pageSize := *gopdf.PageSizeA4
@@ -17,7 +17,7 @@ func GeneratePDF(outputPath string, title string, qrCodes [][]byte) error {
 	// Set font
 	fontName := "dejavu"
 	fontPath := "assets/DejaVuSans.ttf"
-	err := pdf.AddTTFFont(fontName, fontPath)
+	err = pdf.AddTTFFont(fontName, fontPath)
 	if err != nil {
 		return fmt.Errorf("failed to add TTF font %s as %s: %w", fontPath, fontName, err)
 	}
@@ -29,18 +29,38 @@ func GeneratePDF(outputPath string, title string, qrCodes [][]byte) error {
 	// Set header
 	pdf.AddHeader(func() {
 		pdf.SetY(30)
-		pdf.CellWithOption(&gopdf.Rect{W: pageSize.W, H: FontSize + 2}, title, gopdf.CellOption{Align: gopdf.Center})
+		err = pdf.CellWithOption(&gopdf.Rect{W: pageSize.W, H: FontSize + 2}, title, gopdf.CellOption{Align: gopdf.Center})
+		if err != nil {
+			err = fmt.Errorf("failed to add title in header: %w", err)
+		}
 	})
+	if err != nil {
+		return err
+	}
 
 	// Set footer
 	pdf.AddFooter(func() {
-		pdf.SetFontSize(8)
+		err = pdf.SetFontSize(8)
+		if err != nil {
+			err = fmt.Errorf("failed to set font size in footer: %w", err)
+			return
+		}
 		pdf.SetY(pageSize.H - 20)
-		pdf.Cell(nil, "Generated with https://github.com/JenswBE/encrypted-paper")
-
+		err = pdf.Cell(nil, "Generated with https://github.com/JenswBE/encrypted-paper")
+		if err != nil {
+			err = fmt.Errorf("failed to set project URL in footer: %w", err)
+			return
+		}
 		pdf.SetX(pageSize.W - 75)
-		pdf.Cell(nil, fmt.Sprintf("Page %d of %d", pdf.GetNumberOfPages(), len(qrCodes)))
+		err = pdf.Cell(nil, fmt.Sprintf("Page %d of %d", pdf.GetNumberOfPages(), len(qrCodes)))
+		if err != nil {
+			err = fmt.Errorf("failed to set page number in footer: %w", err)
+			return
+		}
 	})
+	if err != nil {
+		return err
+	}
 
 	// Generate pages
 	for i, qrCode := range qrCodes {

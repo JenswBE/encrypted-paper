@@ -33,7 +33,7 @@ func init() {
 // 1. Read QR codes
 // 2. Decrypt
 // 3. Decompress
-func runDecode(cmd *cobra.Command, args []string) error {
+func runDecode(_ *cobra.Command, args []string) error {
 	// Validate flags
 	if decodeFlagOutput == "" {
 		return errors.New("output is a mandatory parameter")
@@ -73,7 +73,7 @@ func runDecode(cmd *cobra.Command, args []string) error {
 	}
 
 	// Write output file
-	err = os.WriteFile(decodeFlagOutput, output, 0o644)
+	err = os.WriteFile(decodeFlagOutput, output, 0o600)
 	if err != nil {
 		return fmt.Errorf("failed to write output file: %w", err)
 	}

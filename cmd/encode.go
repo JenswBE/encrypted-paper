@@ -33,7 +33,7 @@ func init() {
 	encodeCmd.Flags().UintVar(&encodeFlagMaxOutputFiles, "max-output-files", 10, "Maximum number of output files to generate. Set to 0 to disable limit.")
 }
 
-func runEncode(cmd *cobra.Command, args []string) error {
+func runEncode(_ *cobra.Command, args []string) error {
 	// Parse encode config
 	config, err := parseEncodeConfig(encodeFlagTitle, args[0], encodeFlagOutput, encodeFlagMaxOutputFiles)
 	if err != nil {
@@ -143,6 +143,9 @@ func marshal(config EncodeConfig, password string) error {
 	}
 
 	// Generate PDF
-	encode.GeneratePDF(config.OutputFileName, "test", qrCodes)
+	err = encode.GeneratePDF(config.OutputFileName, encodeFlagTitle, qrCodes)
+	if err != nil {
+		return fmt.Errorf("failed to generate PDF: %w", err)
+	}
 	return nil
 }

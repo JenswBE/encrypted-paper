@@ -8,7 +8,7 @@ import (
 
 func TestValidateEncryptionRoundtrip(t *testing.T) {
 	// Data
-	password := "MY_VERY_SECURE_PASSWORD"
+	password := "MY_VERY_SECURE_PASSWORD" // #nosec G101
 	msg := "Should not be public"
 
 	// Generate salt
