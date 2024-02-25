@@ -52,9 +52,9 @@ func runDecode(_ *cobra.Command, args []string) error {
 	}
 
 	// Read input files
-	inputFilesContents := make([][]byte, len(args))
-	for i, inputFile := range args {
-		inputFilesContents[i], err = os.ReadFile(inputFile)
+	inputFilesContents := make(map[string][]byte, len(args))
+	for _, inputFile := range args {
+		inputFilesContents[inputFile], err = os.ReadFile(inputFile)
 		if err != nil {
 			return fmt.Errorf("failed to read file %s: %w", inputFile, err)
 		}
@@ -80,9 +80,9 @@ func runDecode(_ *cobra.Command, args []string) error {
 	return nil
 }
 
-func decodeQRCodes(qrCodes [][]byte, password string) ([]byte, error) {
+func decodeQRCodes(qrCodes map[string][]byte, password string) ([]byte, error) {
 	// Scan and combine QR codes
-	encryptedData, salt, err := encode.ScanQRCodes(qrCodes)
+	encryptedData, salt, err := encode.ScanAndCombineQRCodes(qrCodes)
 	if err != nil {
 		return nil, fmt.Errorf("failed to scan and combine QR codes: %w", err)
 	}

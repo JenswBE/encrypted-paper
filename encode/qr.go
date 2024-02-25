@@ -5,10 +5,12 @@ import (
 	"cmp"
 	"errors"
 	"fmt"
+	"log/slog"
 	"math"
 	"slices"
 
 	"github.com/fxamacker/cbor/v2"
+	"golang.org/x/sync/errgroup"
 
 	"github.com/JenswBE/encrypted-paper/encrypt"
 	"github.com/JenswBE/encrypted-paper/utils"
@@ -132,22 +134,11 @@ func calcPageCount(maxDataSizeWithHeader, maxDataSizeWithoutHeader, totalDataSiz
 	return remainingSize/maxDataSizeWithoutHeader + 2 // 1 for page with header and 1 for int decimal cutoff
 }
 
-func ScanQRCodes(qrCodes [][]byte) (data, salt []byte, err error) {
-	// Scan and unmarshal QR codes
-	qrDatas := make([]QRData, len(qrCodes))
-	for i, qrCode := range qrCodes {
-		// Scan QR code
-		var cborData bytes.Buffer
-		err = utils.RunCommand("scan QR code", bytes.NewReader(qrCode), &cborData, "zbarimg", "--raw", "--oneshot", "--set=binary", "-")
-		if err != nil {
-			return nil, nil, fmt.Errorf("failed to scan QR code: %w", err)
-		}
-
-		// Unmarshal from CBOR
-		err = cbor.NewDecoder(&cborData).Decode(&qrDatas[i])
-		if err != nil {
-			return nil, nil, fmt.Errorf("failed to decode data as CBOR: %w", err)
-		}
+func ScanAndCombineQRCodes(qrCodes map[string][]byte) (data, salt []byte, err error) {
+	// Scan QR codes
+	qrDatas, err := scanQRCodes(qrCodes)
+	if err != nil {
+		return nil, nil, fmt.Errorf("failed to scan QR codes: %w", err)
 	}
 
 	// Sort and combine codes
@@ -174,4 +165,43 @@ func ScanQRCodes(qrCodes [][]byte) (data, salt []byte, err error) {
 		buf.Write(qrData.Data)
 	}
 	return buf.Bytes(), salt, nil
+}
+
+func scanQRCodes(qrCodes map[string][]byte) ([]QRData, error) {
+	// Scan and unmarshal QR codes
+	qrDatasChan := make(chan QRData, len(qrCodes))
+	g := new(errgroup.Group)
+	for fileName, qrCode := range qrCodes {
+		g.Go(func() error {
+			// Scan QR code
+			var cborData bytes.Buffer
+			err := utils.RunCommand("scan QR code", bytes.NewReader(qrCode), &cborData, "zbarimg", "--raw", "--oneshot", "--set=binary", "-")
+			if err != nil {
+				slog.Error("failed to scan QR code in file", "file", fileName, "error", err)
+				return fmt.Errorf(`failed to scan QR code in file "%s": %w`, fileName, err)
+			}
+
+			// Unmarshal from CBOR
+			var qrData QRData
+			err = cbor.NewDecoder(&cborData).Decode(&qrData)
+			if err != nil {
+				slog.Error("failed to decode data as CBOR", "file", fileName, "error", err)
+				return fmt.Errorf(`failed to decode data from file "%s" as CBOR: %w`, fileName, err)
+			}
+			qrDatasChan <- qrData
+			return nil
+		})
+	}
+	if err := g.Wait(); err != nil {
+		close(qrDatasChan)
+		return nil, errors.New("failed to scan and decode one or more QR codes")
+	}
+
+	// Collect results
+	close(qrDatasChan)
+	qrDatas := make([]QRData, 0, len(qrCodes))
+	for qrData := range qrDatasChan {
+		qrDatas = append(qrDatas, qrData)
+	}
+	return qrDatas, nil
 }

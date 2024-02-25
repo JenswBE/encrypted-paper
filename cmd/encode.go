@@ -132,7 +132,11 @@ func marshal(config EncodeConfig, password string) error {
 	}
 
 	// Ensure QR codes are decodable
-	decodedData, err := decodeQRCodes(qrCodes, password)
+	qrCodesMap := make(map[string][]byte, len(qrCodes))
+	for i, qrCode := range qrCodes {
+		qrCodesMap[fmt.Sprintf("roundtrip-%d", i)] = qrCode
+	}
+	decodedData, err := decodeQRCodes(qrCodesMap, password)
 	if err != nil {
 		return fmt.Errorf("failed to decode generated QR codes for validation: %w", err)
 	}
