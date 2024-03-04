@@ -6,7 +6,7 @@ require (
 	github.com/fxamacker/cbor/v2 v2.6.0
 	github.com/signintech/gopdf v0.22.1
 	github.com/spf13/cobra v1.8.0
-	github.com/stretchr/testify v1.8.4
+	github.com/stretchr/testify v1.9.0
 	golang.org/x/crypto v0.20.0
 	golang.org/x/sync v0.6.0
 	golang.org/x/term v0.17.0
