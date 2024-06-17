@@ -64,7 +64,7 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_PASSWORD }}
 
       - name: Build and push
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           platforms: ${{ env.PLATFORMS }}
           push: ${{ github.event_name == 'push' }}
