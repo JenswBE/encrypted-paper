@@ -5,7 +5,7 @@ go 1.22.0
 require (
 	github.com/fxamacker/cbor/v2 v2.6.0
 	github.com/signintech/gopdf v0.26.0
-	github.com/spf13/cobra v1.8.0
+	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.9.0
 	golang.org/x/crypto v0.24.0
 	golang.org/x/sync v0.7.0
