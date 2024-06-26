@@ -2,6 +2,7 @@ package encode
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/signintech/gopdf"
 
@@ -46,13 +47,15 @@ func GeneratePDF(outputPath string, title string, qrCodes [][]byte) (err error) 
 			err = fmt.Errorf("failed to set font size in footer: %w", err)
 			return
 		}
+		pdf.SetX(20)
 		pdf.SetY(pageSize.H - 20)
-		err = pdf.Cell(nil, "Generated with https://github.com/JenswBE/encrypted-paper")
+		err = pdf.Cell(nil, "Generated with https://github.com/JenswBE/encrypted-paper on "+time.Now().Format("02 Jan 2006 15:04 -0700"))
 		if err != nil {
 			err = fmt.Errorf("failed to set project URL in footer: %w", err)
 			return
 		}
 		pdf.SetX(pageSize.W - 75)
+		pdf.SetY(pageSize.H - 20)
 		err = pdf.Cell(nil, fmt.Sprintf("Page %d of %d", pdf.GetNumberOfPages(), len(qrCodes)))
 		if err != nil {
 			err = fmt.Errorf("failed to set page number in footer: %w", err)
