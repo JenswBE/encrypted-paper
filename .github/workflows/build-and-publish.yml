@@ -7,7 +7,7 @@ on:
   pull_request:
 
 env:
-  GO_VERSION: "1.22" # Also update Dockerfile when bumping
+  GO_VERSION: "1.23" # Also update Dockerfile when bumping
   DOCKER_HUB_USER: jenswbebot
   DOCKER_HUB_REPO: jenswbe/encrypted-paper
   PLATFORMS: linux/amd64,linux/arm64
@@ -50,7 +50,7 @@ jobs:
           version: latest
           args: >-
             --timeout=5m
-            --disable gochecknoinits,goerr113,forbidigo,wrapcheck
+            --disable gochecknoinits,err113,forbidigo,wrapcheck
 
       - name: Run unit tests
         run: go test ./...
