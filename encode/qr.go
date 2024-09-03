@@ -33,7 +33,7 @@ type QRData struct {
 	Data       []byte    `json:"data"`
 }
 
-func getQRDataOverhead(withHeader bool) int {
+func getQRDataOverhead(withHeader bool) uint {
 	qrData := QRData{
 		Data:       []byte{1},
 		PageNumber: MaxPageCount,
@@ -48,14 +48,14 @@ func getQRDataOverhead(withHeader bool) int {
 	if err != nil {
 		panic(fmt.Sprintf("Failed to calculate QR data overhead: %v", err))
 	}
-	return len(output)
+	return uint(len(output))
 }
 
-func GenerateQRCodes(salt []byte, data []byte, maxOutputPages int) ([][]byte, error) {
+func GenerateQRCodes(salt []byte, data []byte, maxOutputPages uint) ([][]byte, error) {
 	// Calculate overhead
 	maxDataSizeWithHeader := MaxBytesInQRCode - getQRDataOverhead(true)
 	maxDataSizeWithoutHeader := MaxBytesInQRCode - getQRDataOverhead(false)
-	pageCount := calcPageCount(maxDataSizeWithHeader, maxDataSizeWithoutHeader, len(data))
+	pageCount := calcPageCount(maxDataSizeWithHeader, maxDataSizeWithoutHeader, uint(len(data)))
 	if pageCount > math.MaxUint8 {
 		return nil, fmt.Errorf("page count is %d, but maximum supported page count in header is %d", pageCount, MaxPageCount)
 	}
@@ -66,7 +66,7 @@ func GenerateQRCodes(salt []byte, data []byte, maxOutputPages int) ([][]byte, er
 	}
 
 	// Generate QR codes
-	var cursor int
+	var cursor uint
 	var qrData QRData
 	var err error
 	output := make([][]byte, pageCount)
@@ -90,8 +90,8 @@ func GenerateQRCodes(salt []byte, data []byte, maxOutputPages int) ([][]byte, er
 		} else {
 			// Stage remaining pages
 			readUntil := cursor + maxDataSizeWithoutHeader
-			if readUntil > len(data) {
-				readUntil = len(data)
+			if readUntil > uint(len(data)) {
+				readUntil = uint(len(data))
 			}
 			qrData = QRData{
 				PageNumber: uint8(pageNumber),
@@ -126,7 +126,7 @@ func marshalAndCreateQR(qrData QRData) ([]byte, error) {
 	return qrCode.Bytes(), nil
 }
 
-func calcPageCount(maxDataSizeWithHeader, maxDataSizeWithoutHeader, totalDataSize int) int {
+func calcPageCount(maxDataSizeWithHeader, maxDataSizeWithoutHeader, totalDataSize uint) uint {
 	if totalDataSize <= maxDataSizeWithHeader {
 		return 1
 	}
@@ -158,7 +158,7 @@ func ScanAndCombineQRCodes(qrCodes map[string][]byte) (data, salt []byte, err er
 				return nil, nil, fmt.Errorf("salt in header is %d bytes, but salt must be %d bytes", len(qrData.Header.Salt), encrypt.SaltSizeBytes)
 			}
 			salt = qrData.Header.Salt
-			if int(qrData.Header.PageCount) != len(qrCodes) {
+			if uint(qrData.Header.PageCount) != uint(len(qrCodes)) {
 				return nil, nil, fmt.Errorf("%d qr codes received, but accordingly to header, there must be %d qr codes", len(qrCodes), qrData.Header.PageCount)
 			}
 		}

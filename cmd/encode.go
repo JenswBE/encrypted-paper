@@ -126,7 +126,7 @@ func marshal(config EncodeConfig, password string) error {
 	}
 
 	// Encode into QR codes
-	qrCodes, err := encode.GenerateQRCodes(salt, encryptedInput, int(config.MaxOutputFiles))
+	qrCodes, err := encode.GenerateQRCodes(salt, encryptedInput, config.MaxOutputFiles)
 	if err != nil {
 		return fmt.Errorf("failed to encode data into QR code: %w", err)
 	}
