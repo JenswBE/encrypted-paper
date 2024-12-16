@@ -7,7 +7,7 @@ require (
 	github.com/signintech/gopdf v0.28.2
 	github.com/spf13/cobra v1.8.1
 	github.com/stretchr/testify v1.10.0
-	golang.org/x/crypto v0.30.0
+	golang.org/x/crypto v0.31.0
 	golang.org/x/sync v0.9.0
 	golang.org/x/term v0.27.0
 )
