@@ -48,8 +48,6 @@ jobs:
         uses: golangci/golangci-lint-action@v8
         with:
           version: latest
-          args: >-
-            --disable gochecknoinits,err113,forbidigo,wrapcheck
 
       - name: Run unit tests
         run: go test ./...

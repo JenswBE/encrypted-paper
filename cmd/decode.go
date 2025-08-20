@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 
@@ -54,7 +55,7 @@ func runDecode(_ *cobra.Command, args []string) error {
 	// Read input files
 	inputFilesContents := make(map[string][]byte, len(args))
 	for _, inputFile := range args {
-		inputFilesContents[inputFile], err = os.ReadFile(inputFile)
+		inputFilesContents[inputFile], err = os.ReadFile(filepath.Clean(inputFile))
 		if err != nil {
 			return fmt.Errorf("failed to read file %s: %w", inputFile, err)
 		}
