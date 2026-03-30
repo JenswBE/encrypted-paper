@@ -3,7 +3,7 @@ module github.com/JenswBE/encrypted-paper
 go 1.24.1
 
 require (
-	github.com/fxamacker/cbor/v2 v2.9.0
+	github.com/fxamacker/cbor/v2 v2.9.1
 	github.com/signintech/gopdf v0.36.0
 	github.com/spf13/cobra v1.10.2
 	github.com/stretchr/testify v1.11.1
