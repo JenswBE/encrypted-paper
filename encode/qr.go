@@ -89,10 +89,7 @@ func GenerateQRCodes(salt []byte, data []byte, maxOutputPages uint) ([][]byte, e
 			}
 		} else {
 			// Stage remaining pages
-			readUntil := cursor + maxDataSizeWithoutHeader
-			if readUntil > uint(len(data)) {
-				readUntil = uint(len(data))
-			}
+			readUntil := min(cursor+maxDataSizeWithoutHeader, uint(len(data)))
 			qrData = QRData{
 				PageNumber: uint8(pageNumber),
 				Data:       data[cursor:readUntil],

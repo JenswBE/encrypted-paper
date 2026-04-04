@@ -49,6 +49,11 @@ jobs:
         with:
           version: latest
 
+      - name: Ensure all fixes are applied
+        run: |
+          go fix ./...
+          git diff --exit-code
+
       - name: Run unit tests
         run: go test ./...
 

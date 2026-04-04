@@ -10,7 +10,7 @@ import (
 )
 
 func checkDependency(cmd string) error {
-	command := exec.Command("which", cmd)
+	command := exec.Command("which", cmd) // #nosec G204: This is only called with hardcoded command names, not user input.
 	if err := command.Run(); err != nil {
 		return fmt.Errorf("required dependency is not installed: %s", cmd)
 	}
@@ -35,7 +35,7 @@ func CheckDependencies(cmds ...string) error {
 }
 
 func RunCommand(description string, input io.Reader, output io.Writer, cmd string, cmdArgs ...string) error {
-	command := exec.Command(cmd, cmdArgs...)
+	command := exec.Command(cmd, cmdArgs...) // #nosec G204: This is only called with hardcoded command names, not user input.
 	if input != nil {
 		command.Stdin = input
 	}
