@@ -7,19 +7,19 @@ require (
 	github.com/signintech/gopdf v0.36.1
 	github.com/spf13/cobra v1.10.2
 	github.com/stretchr/testify v1.11.1
-	golang.org/x/crypto v0.52.0
-	golang.org/x/sync v0.20.0
-	golang.org/x/term v0.43.0
+	golang.org/x/crypto v0.53.0
+	golang.org/x/sync v0.21.0
+	golang.org/x/term v0.44.0
 )
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
-	github.com/phpdave11/gofpdi v1.0.15 // indirect
+	github.com/phpdave11/gofpdi v1.0.16 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/spf13/pflag v1.0.10 // indirect
 	github.com/x448/float16 v0.8.4 // indirect
-	golang.org/x/sys v0.45.0 // indirect
+	golang.org/x/sys v0.46.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
